@@ -6,7 +6,7 @@
 <title>エントリー</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Zen+Maru+Gothic:wght@300&display=swap" rel="stylesheet">
 <style>
   @property --bg { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
   @property --ink { syntax: "<color>"; inherits: true; initial-value: #1c1f26; }
@@ -14,19 +14,18 @@
   @property --line { syntax: "<color>"; inherits: true; initial-value: #e3e6ee; }
   @property --accent { syntax: "<color>"; inherits: true; initial-value: #4f7cff; }
   @property --accent2 { syntax: "<color>"; inherits: true; initial-value: #8fb0ff; }
-  :root { --bg: #ffffff; --ink: #1c1f26; --mute: #7a8190; --line: #e3e6ee; --accent: #4f7cff; --accent2: #8fb0ff; --dur: 320ms; --step: 35ms; transition: --bg 2s ease, --ink 2s ease, --mute 2s ease, --line 2s ease, --accent 2s ease, --accent2 2s ease; }
+  :root { --bg: #ffffff; --ink: #1c1f26; --mute: #7a8190; --line: #e3e6ee; --accent: #4f7cff; --accent2: #8fb0ff; --dur: 520ms; --step: 60ms; transition: --bg 2s ease, --ink 2s ease, --mute 2s ease, --line 2s ease, --accent 2s ease, --accent2 2s ease; }
   :root[data-theme="night"] { --bg: #0f1420; --ink: #e9edf7; --mute: #8b94aa; --line: #232b3f; --accent: #7fa2ff; --accent2: #4a67c9; }
 
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; overflow: hidden; background: var(--bg); color: var(--ink); font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif; font-weight: 300; font-synthesis: none; }
   button { font: inherit; font-weight: 300; color: inherit; }
   b { font-weight: 300; }
-  .none { display: none !important; }
 
   #bg { position: fixed; inset: 0; background: repeating-linear-gradient(115deg, color-mix(in srgb, var(--accent) 7%, transparent) 0 2px, transparent 2px 64px); animation: drift 40s linear infinite; }
   @keyframes drift { to { background-position: 640px 0; } }
 
-  .scene { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4vmin; }
+  .scene { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4vmin; line-height: 1.3; overflow: hidden; }
   .scene.active { display: flex; }
 
   .rise { opacity: 0; animation: rise .7s cubic-bezier(.2, .8, .2, 1) forwards; animation-delay: var(--d, 0ms); }
@@ -41,11 +40,6 @@
   .ask { font-size: 5vmin; margin-top: 1vmin; }
   .lbl { font-size: 3vmin; color: var(--mute); margin-top: 1.5vmin; }
   .note { font-size: 3.2vmin; color: var(--mute); margin-top: 3vmin; }
-
-  .title-badge { position: relative; display: inline-block; overflow: hidden; font-size: 3.8vmin; letter-spacing: .3em; padding: .9vmin 3vmin .9vmin calc(3vmin + .3em); margin-bottom: 2.4vmin; border: 1px solid var(--accent); border-radius: 10vmin; color: var(--accent); }
-  .title-badge.promo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .65) 50%, transparent 65%); background-size: 260% 100%; background-position: 160% 0; animation: sweep 1.6s ease 1s 2 both; }
-  @keyframes sweep { from { background-position: 160% 0; } to { background-position: -60% 0; } }
-  .promo-label { font-size: 3vmin; letter-spacing: .4em; padding-left: .4em; color: var(--mute); margin-bottom: 1.4vmin; }
 
   #idle-date { font-size: 4.2vmin; color: var(--mute); letter-spacing: .2em; }
   #clock { font-size: 22vmin; line-height: 1.1; letter-spacing: .02em; }
@@ -77,54 +71,21 @@
   #r-qr { width: 29vmin; height: 29vmin; padding: 2vmin; border: 1px solid var(--line); background: #fff; margin: 0 auto; }
   #r-qr svg { width: 100%; height: 100%; display: block; }
 
-  #e-date { font-size: 4vmin; color: var(--mute); }
-  #e-time { font-size: 10vmin; letter-spacing: .05em; margin-top: 1vmin; }
-  .total { display: flex; align-items: baseline; justify-content: center; gap: 2vmin; margin-top: 3vmin; font-size: 4.2vmin; }
-  .total b { font-size: 13vmin; color: var(--accent); min-width: 1ch; }
+  #s-entered .name { font-size: 11vmin; line-height: 1.2; }
+  #s-entered .rule { margin: 2.4vmin auto; }
+  #e-date { font-size: 3.6vmin; color: var(--mute); }
+  #e-time { font-size: 9vmin; letter-spacing: .05em; margin-top: .6vmin; }
+  .total { display: flex; align-items: baseline; justify-content: center; gap: 2vmin; margin-top: 2.4vmin; font-size: 3.8vmin; }
+  .total b { font-size: 11vmin; color: var(--accent); min-width: 1ch; }
 
   .check { width: 16vmin; margin: 3vmin 0; fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
   .check path { stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw .7s ease .2s forwards; }
   @keyframes draw { to { stroke-dashoffset: 0; } }
 
-  .o-sub { font-size: 3.6vmin; color: var(--mute); letter-spacing: .2em; margin-bottom: 2vmin; }
-  .o-stage { position: relative; width: 70vmin; height: 64vmin; margin-top: 1vmin; }
-  .o-holder { position: absolute; left: 50%; bottom: 0; width: 16vmin; height: 32vmin; margin-left: -8vmin; transform-origin: 50% 100%; transition: opacity .6s ease, transform .6s ease; }
-  .o-box { position: absolute; inset: 0; z-index: 2; border-radius: 1.6vmin; background: var(--accent); }
-  .o-box::before { content: ""; position: absolute; left: 2.4vmin; right: 2.4vmin; top: 0; height: 1.4vmin; border-radius: 0 0 1vmin 1vmin; background: var(--bg); opacity: .55; }
-  .o-box::after { content: "おみくじ"; position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); writing-mode: vertical-rl; font-size: 4vmin; letter-spacing: .3em; color: var(--bg); }
-  .o-stick { position: absolute; left: 50%; bottom: 2vmin; width: 3.8vmin; height: 27vmin; margin-left: -1.9vmin; z-index: 1; border: 1px solid var(--ink); border-radius: .6vmin; background: color-mix(in srgb, var(--bg) 90%, var(--accent)); }
-  #o-no { position: absolute; top: 1.2vmin; left: 0; right: 0; text-align: center; writing-mode: vertical-rl; font-size: 2.4vmin; letter-spacing: .1em; color: var(--ink); }
-  .shake .o-holder { animation: shake 1.9s ease-in-out; }
-  @keyframes shake { 0%, 100% { transform: rotate(0); } 8% { transform: rotate(-16deg) translateX(-1vmin); } 18% { transform: rotate(14deg) translateX(1vmin); } 30% { transform: rotate(-18deg) translateX(-1vmin); } 42% { transform: rotate(16deg) translateX(1vmin); } 56% { transform: rotate(-12deg); } 70% { transform: rotate(10deg); } 84% { transform: rotate(-5deg); } }
-  .stick .o-stick { animation: stickUp .9s cubic-bezier(.2, .9, .3, 1.15) forwards; }
-  @keyframes stickUp { from { transform: translateY(0); } to { transform: translateY(-20vmin); } }
-  .paper .o-holder { opacity: 0; transform: translateY(5vmin) scale(.92); }
-
-  .o-paper { position: absolute; left: 50%; top: 0; width: 52vmin; margin-left: -26vmin; padding: 4.4vmin 4vmin 4vmin; background: var(--bg); border: 1px solid var(--line); box-shadow: 0 2vmin 6vmin rgba(0, 0, 0, .16); clip-path: inset(-10vmin -10vmin 100% -10vmin); opacity: 0; overflow: hidden; }
-  .paper .o-paper { opacity: 1; animation: unroll 1s cubic-bezier(.3, .7, .2, 1) forwards; }
-  @keyframes unroll { from { clip-path: inset(-10vmin -10vmin 100% -10vmin); } to { clip-path: inset(-10vmin -10vmin -10vmin -10vmin); } }
-  .o-head { font-size: 3.2vmin; letter-spacing: .5em; padding-left: .5em; color: var(--mute); }
-  .o-num { font-size: 3vmin; color: var(--mute); margin-top: 1vmin; }
-  .o-rank { font-size: 19vmin; line-height: 1.1; margin: 2.6vmin 0 1.4vmin; opacity: 0; }
-  .o-rank[data-rank="大吉"], .o-rank[data-rank="中吉"] { color: var(--accent); }
-  .o-rank[data-rank="凶"] { color: var(--mute); }
-  .result .o-rank { animation: stamp .75s cubic-bezier(.2, 1.4, .3, 1) both; }
-  @keyframes stamp { 0% { opacity: 0; transform: scale(2.6) rotate(-8deg); filter: blur(6px); } 60% { opacity: 1; transform: scale(.93) rotate(1deg); filter: blur(0); } 100% { opacity: 1; transform: none; } }
-  .o-line { height: 1px; width: 0; margin: 2vmin auto; background: var(--ink); }
-  .result .o-line { animation: rule .8s ease .5s forwards; }
-  .o-msg, .o-lucky { opacity: 0; }
-  .o-msg { font-size: 3.6vmin; line-height: 1.7; }
-  .o-lucky { font-size: 3vmin; color: var(--mute); margin-top: 2.4vmin; }
-  .result .o-msg { animation: rise .8s ease .7s forwards; }
-  .result .o-lucky { animation: rise .8s ease 1.2s forwards; }
-  .result .o-paper::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .5) 50%, transparent 65%); background-size: 260% 100%; animation: sweep 1.4s ease .2s 1 both; }
-  .result .o-paper { animation: unroll 1s cubic-bezier(.3, .7, .2, 1) forwards, flash 1s ease .1s both; }
-  @keyframes flash { 0% { background: color-mix(in srgb, var(--accent) 22%, var(--bg)); } 100% { background: var(--bg); } }
-
   #cd { position: fixed; right: 3.4vmin; top: 3vmin; z-index: 20; display: flex; align-items: baseline; gap: 1.2vmin; font-size: 3.2vmin; color: var(--mute); opacity: 0; transform: translateY(-1.5vmin); transition: opacity .4s, transform .4s, color .4s; pointer-events: none; }
   #cd.on { opacity: 1; transform: none; }
   #cd.warn { color: var(--accent); }
-  #cd-num { position: relative; display: inline-block; width: 4.0ch; height: 1.25em; overflow: hidden; font-size: 1.6em; line-height: 1.25; font-variant-numeric: tabular-nums; text-align: right; }
+  #cd-num { position: relative; display: inline-block; width: 3.4ch; height: 1.25em; overflow: hidden; font-size: 1.6em; line-height: 1.25; font-variant-numeric: tabular-nums; text-align: right; }
   #cd-num .r { position: absolute; left: 0; right: 0; top: 0; animation: rollIn .4s cubic-bezier(.65, 0, .35, 1) both; }
   #cd-num .r.old { animation: rollOut .4s cubic-bezier(.65, 0, .35, 1) both; }
   @keyframes rollIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -133,10 +94,11 @@
   #popup { position: fixed; inset: 0; z-index: 45; display: none; align-items: center; justify-content: center; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(6px); }
   #popup.on { display: flex; animation: fadeIn .25s ease both; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .pop-card { min-width: 56vmin; max-width: 88vw; padding: 6vmin 8vmin; text-align: center; background: var(--bg); border: 1px solid var(--line); border-radius: 3vmin; box-shadow: 0 2vmin 8vmin rgba(0, 0, 0, .18); animation: popIn .5s cubic-bezier(.2, 1.3, .4, 1) both; }
-  @keyframes popIn { from { transform: translateY(4vmin) scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
-  .pop-title { font-size: 6vmin; color: var(--accent); }
-  .pop-body { font-size: 3.6vmin; color: var(--mute); margin-top: 2vmin; line-height: 1.6; }
+  .pop-card { min-width: 56vmin; max-width: 88vw; padding: 6.4vmin 8vmin; text-align: center; background: var(--bg); border: 1px solid var(--line); border-radius: 7vmin; box-shadow: 0 2vmin 8vmin rgba(0, 0, 0, .18); font-family: "Zen Maru Gothic", "Noto Sans JP", sans-serif; animation: popIn .55s cubic-bezier(.2, 1.4, .4, 1) both; }
+  @keyframes popIn { from { transform: translateY(4vmin) scale(.88); opacity: 0; } to { transform: none; opacity: 1; } }
+  .pop-title { font-size: 6vmin; color: var(--accent); animation: wobble 2.4s ease-in-out .5s infinite; }
+  @keyframes wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-2deg); } 75% { transform: rotate(2deg); } }
+  .pop-body { font-size: 3.6vmin; color: var(--mute); margin-top: 2.2vmin; line-height: 1.7; }
 
   #confetti { position: fixed; inset: 0; z-index: 40; pointer-events: none; overflow: hidden; }
   #confetti i { position: absolute; top: -5vh; display: block; border-radius: 1px; animation: fall linear forwards; }
@@ -153,6 +115,8 @@
   #testPanel { position: fixed; right: 10px; bottom: 14px; z-index: 60; display: none; flex-wrap: wrap; gap: 6px; max-width: 60vw; justify-content: flex-end; }
   #testPanel.on { display: flex; }
   #testPanel button { font-size: 14px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+  #dbg { position: fixed; left: 8px; bottom: 8px; z-index: 70; display: none; white-space: pre; font: 12px/1.5 monospace; color: var(--mute); }
+  #dbg.on { display: block; }
 </style>
 </head>
 <body>
@@ -162,22 +126,21 @@
   <div class="rise" style="--d:0ms"><div id="idle-date"></div></div>
   <div class="rise" style="--d:100ms"><div id="clock"><span id="hh"></span><span class="colon">:</span><span id="mm"></span></div></div>
   <div class="tapicon rise" style="--d:250ms"><div class="reader"></div><div class="cardico"></div></div>
-  <div class="rise" style="--d:400ms"><span class="pulse" id="hint">画面をタップしてください</span></div>
+  <div class="rise" style="--d:400ms"><span class="pulse" id="hint">画面をタップしてください!</span></div>
 </section>
 
 <section class="scene" id="s-confirm">
-  <div class="label rise" style="--d:0ms">ようこそ</div>
-  <div class="title-badge rise" id="c-title" style="--d:120ms"></div>
-  <div class="name chars" id="c-name" style="--d:220ms"></div>
-  <div class="rule" style="--d:560ms"></div>
-  <div class="ask rise" style="--d:760ms">エントリーしますか？</div>
-  <div class="btns rise" style="--d:940ms">
+  <div class="label rise" style="--d:0ms">ようこそ！</div>
+  <div class="name chars" id="c-name" style="--d:120ms"></div>
+  <div class="rule" style="--d:460ms"></div>
+  <div class="ask rise" style="--d:660ms">エントリーしますか？</div>
+  <div class="btns rise" style="--d:840ms">
     <button class="btn main" id="btn-entry">エントリー</button><button class="btn sub" id="btn-cancel">いいえ</button>
   </div>
 </section>
 
 <section class="scene" id="s-register">
-  <div class="nudge">登録されていません</div>
+  <div class="nudge">登録されていないカードです</div>
   <div class="reg">
     <div class="rise" style="--d:300ms">
       <div class="lbl">アクセスコード</div>
@@ -188,19 +151,16 @@
       <div class="lbl">QRコードを読み取って登録</div>
     </div>
   </div>
-  <div class="note rise" style="--d:1000ms">Discordコマンドの「 /card 」 と 「 アクセスコード 」 でも登録できます</div>
+  <div class="note rise" style="--d:1000ms">Discordコマンドでは､ 「 /card 」 と 「 アクセスコード 」 で登録もできます</div>
 </section>
 
 <section class="scene" id="s-entered">
   <div class="label rise" style="--d:0ms">エントリー完了</div>
-  <div class="promo-label rise" id="e-promo" style="--d:150ms">称号を獲得</div>
-  <div class="title-badge rise" id="e-title" style="--d:250ms"></div>
-  <div class="name chars" id="e-name" style="--d:350ms"></div>
-  <div class="rule" style="--d:750ms"></div>
-  <div class="rise" style="--d:900ms"><div id="e-date"></div></div>
-  <div class="rise" style="--d:1050ms"><div id="e-time"></div></div>
-  <div class="total rise" style="--d:1250ms"><span>総エントリー数</span><b id="e-count">0</b><span>回</span></div>
-  <div class="note rise" id="e-omi" style="--d:1600ms"></div>
+  <div class="name chars" id="e-name" style="--d:150ms"></div>
+  <div class="rule" style="--d:550ms"></div>
+  <div class="rise" style="--d:700ms"><div id="e-date"></div></div>
+  <div class="rise" style="--d:850ms"><div id="e-time"></div></div>
+  <div class="total rise" style="--d:1050ms"><span>総エントリー数</span><b id="e-count">0</b><span>回</span></div>
 </section>
 
 <section class="scene" id="s-registered">
@@ -211,35 +171,16 @@
   <div class="note rise" style="--d:1200ms">続けてエントリーします</div>
 </section>
 
-<section class="scene" id="s-omikuji">
-  <div class="label rise" style="--d:0ms"></div>
-  <div class="o-sub rise" id="o-sub" style="--d:150ms"></div>
-  <div class="o-stage">
-    <div class="o-holder">
-      <div class="o-stick"><span id="o-no"></span></div>
-      <div class="o-box"></div>
-    </div>
-    <div class="o-paper">
-      <div class="o-head">本日のおみくじ</div>
-      <div class="o-num" id="o-num"></div>
-      <div class="o-rank" id="o-rank"></div>
-      <div class="o-line"></div>
-      <div class="o-msg" id="o-msg"></div>
-      <div class="o-lucky" id="o-lucky"></div>
-    </div>
-  </div>
-</section>
-
 <div id="cd"><span>のこり</span><span id="cd-num"></span><span>秒</span></div>
 <div id="popup"><div class="pop-card"><div class="pop-title" id="pop-title"></div><div class="pop-body" id="pop-body"></div></div></div>
 <div id="confetti"></div>
 <div id="cover"></div>
+<div id="dbg"></div>
 
 <div id="testPanel">
   <button id="t-confirm">確認</button>
   <button id="t-register">未登録</button>
   <button id="t-entered">完了</button>
-  <button id="t-entered2">引き済み</button>
   <button id="t-registered">登録</button>
   <button id="t-morning">朝</button>
   <button id="t-night">夜</button>
@@ -256,48 +197,53 @@ const num = (k, d) => {
   return Number.isFinite(v) ? v : d;
 };
 
-const WORKER = "https://entry.keikeiy1026-e69.workers.dev";
-const FILES = { bgm: "bgm.m4a", entry: "entry.wav", timeout: "", click: "click.mp3" };
-const BGM_VOLUME = 0.6;
-const FADE_IN = 1.2;
-const FADE_OUT = 1.6;
-const LOOP_BACK_TO = num("loopStart", 0);
-const LOOP_CUT_END = num("loopCut", 0);
-const MORNING_FROM = num("morningFrom", 6);
-const NIGHT_FROM = num("nightFrom", 18);
+const CONFIG = {
+  worker: "https://entry.keikeiy1026-e69.workers.dev",
+  files: { bgm: "bgm.wav", entry: "entry.wav", timeout: "", click: "click.mp3" },
+  bgmVolume: 0.6,
+  fadeIn: 1.2,
+  fadeOut: 1.6,
+  loopStart: 0,
+  loopCut: 0,
+  xfade: 0.15,
+  morningFrom: 6,
+  nightFrom: 18,
+  timeoutConfirm: 30,
+  timeoutRegister: 120,
+  enteredHold: 9,
+  registeredHold: 2.6,
+  popupSec: 2.8,
+  coverStripes: 8,
+  coverDur: 520,
+  coverStep: 60,
+  coverHold: 150
+};
+const cfg = (k) => (q.has(k) ? num(k, CONFIG[k]) : CONFIG[k]);
+
+const WORKER = CONFIG.worker;
+const FILES = CONFIG.files;
+const BGM_VOLUME = cfg("bgmVolume");
+const FADE_IN = cfg("fadeIn");
+const FADE_OUT = cfg("fadeOut");
+const LOOP_BACK_TO = cfg("loopStart");
+const LOOP_CUT_END = cfg("loopCut");
+const XFADE = cfg("xfade");
+const MORNING_FROM = cfg("morningFrom");
+const NIGHT_FROM = cfg("nightFrom");
 const TIMEOUT = {
-  confirm: num("timeout", 30) * 1000,
-  register: num("timeout", 120) * 1000,
-  entered: 9000,
-  enteredToOmikuji: 6500,
-  registered: 2600,
-  omikuji: 9000
+  confirm: (q.has("timeout") ? num("timeout", CONFIG.timeoutConfirm) : CONFIG.timeoutConfirm) * 1000,
+  register: (q.has("timeout") ? num("timeout", CONFIG.timeoutRegister) : CONFIG.timeoutRegister) * 1000,
+  entered: cfg("enteredHold") * 1000,
+  registered: cfg("registeredHold") * 1000
 };
-const POPUP_MS = 2600;
-const STRIPES = 8;
-const DUR = 320;
-const STEP = 35;
-const COVER_MS = DUR + (STRIPES - 1) * STEP + 40;
-
-const TITLES = [
-  [1, "初来訪"], [3, "顔見知り"], [5, "ご近所さん"], [10, "常連"], [20, "神常連"],
-  [30, "友達"], [50, "めちゃ友達"], [75, "親友"], [100, "親友の中の親友"], [150, "神"], [200, "殿堂入り"]
-];
-function titleOf(count) {
-  let t = "";
-  for (const [n, name] of TITLES) if (count >= n) t = name;
-  return t;
-}
-
-const GOOD = ["大吉", "中吉"];
-const MSG = {
-  "大吉": ["なにやってもうまくいくかもね!", "今日は思い切って重いことを進めよう!", "ゲームでうまくいくかも!"],
-  "中吉": ["落ち着いて進めれば、うまくいく!", "小さな幸運が振ってくるよ!", "今日は冒険しよう"],
-  "小吉": [ "今日は寝るといいことがあるよ!", "身の回りの人とお話してみよう!"],
-  "吉": ["いつも通りが一番。穏やかに過ごせます", "急がず、ひとつずつ進めれば大丈夫!"],
-"末吉": ["あせらないで!きっと明日にはいいことがあるよ!", "今日は早めに休もう!"]
-};
-const LUCKY = ["1+1", "1×3+3÷3", "20×20", "114×514", "810×810×114514", "1+2", "るーと4", "500513+11", "ばなな (?)", "1+1+1+1+1", "2×2×2", "3×3×3", "4×4×4", "5×5×5", "6×6×6", "7×7×7", "8×8×8", "9×9×9", "10×10×10"];
+const POPUP_MS = cfg("popupSec") * 1000;
+const STRIPES = Math.max(2, Math.round(cfg("coverStripes")));
+const COVER_DUR = cfg("coverDur");
+const COVER_STEP = cfg("coverStep");
+const COVER_HOLD = cfg("coverHold");
+const COVER_MS = COVER_DUR + (STRIPES - 1) * COVER_STEP + 40;
+document.documentElement.style.setProperty("--dur", COVER_DUR + "ms");
+document.documentElement.style.setProperty("--step", COVER_STEP + "ms");
 
 const app = initializeApp({
   apiKey: "AIzaSyBjQWOa8y2UWgL81HvmEv_yiTCtTbk4cxU",
@@ -313,14 +259,14 @@ const scenes = {
   confirm: $("s-confirm"),
   register: $("s-register"),
   entered: $("s-entered"),
-  registered: $("s-registered"),
-  omikuji: $("s-omikuji")
+  registered: $("s-registered")
 };
 const cover = $("cover");
 const hint = $("hint");
 const btnEntry = $("btn-entry");
 const btnCancel = $("btn-cancel");
 let state = "idle";
+let lastDoc = null;
 
 for (let i = 0; i < STRIPES; i++) {
   const s = document.createElement("div");
@@ -344,7 +290,6 @@ const master = ac.createGain();
 master.gain.value = 1;
 master.connect(ac.destination);
 const buffers = {};
-let noiseBuf = null;
 
 async function loadBuffer(url) {
   if (!url) return null;
@@ -375,29 +320,6 @@ function tone(freq, start, dur, type = "sine", vol = 0.18) {
   o.stop(t + dur + 0.02);
 }
 
-function noise(start, dur, vol = 0.1, freq = 2000) {
-  if (!noiseBuf) {
-    noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
-    const d = noiseBuf.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-  }
-  const t = ac.currentTime + start;
-  const s = ac.createBufferSource();
-  const f = ac.createBiquadFilter();
-  const g = ac.createGain();
-  s.buffer = noiseBuf;
-  f.type = "bandpass";
-  f.frequency.value = freq;
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  s.connect(f);
-  f.connect(g);
-  g.connect(master);
-  s.start(t);
-  s.stop(t + dur + 0.02);
-}
-
 function playBuf(name) {
   const b = buffers[name];
   if (!b) return false;
@@ -412,9 +334,9 @@ const SFX = {
   click() { if (!playBuf("click")) tone(880, 0, 0.07, "triangle", 0.14); },
   timeout() {
     if (playBuf("timeout")) return;
-    tone(520, 0, 0.18, "sine", 0.2);
-    tone(390, 0.2, 0.18, "sine", 0.2);
-    tone(260, 0.4, 0.35, "sine", 0.22);
+    tone(660, 0, 0.16, "sine", 0.16);
+    tone(523, 0.18, 0.16, "sine", 0.16);
+    tone(440, 0.36, 0.3, "sine", 0.16);
   },
   entry() {
     if (playBuf("entry")) return;
@@ -428,71 +350,76 @@ const SFX = {
     tone(1175, 0.2, 0.3);
   },
   error() {
-    tone(220, 0, 0.15, "square", 0.08);
-    tone(180, 0.16, 0.25, "square", 0.08);
-  },
-  title() {
-    tone(1047, 0, 0.12, "triangle", 0.12);
-    tone(1319, 0.1, 0.12, "triangle", 0.12);
-    tone(1568, 0.2, 0.12, "triangle", 0.12);
-    tone(2093, 0.3, 0.4, "triangle", 0.1);
-  },
-  rattle() {
-    for (let i = 0; i < 8; i++) noise(i * 0.22, 0.09, 0.14, 1800 + (i % 3) * 700);
-  },
-  stick() {
-    tone(520, 0, 0.08, "triangle", 0.16);
-    tone(780, 0.07, 0.12, "triangle", 0.16);
-  },
-  paper() {
-    noise(0, 0.7, 0.07, 3500);
-  },
-  stamp(rank) {
-    tone(110, 0, 0.25, "sine", 0.3);
-    if (rank === "大吉" || rank === "中吉") {
-      tone(392, 0.05, 0.12);
-      tone(523, 0.15, 0.12);
-      tone(659, 0.25, 0.12);
-      tone(784, 0.35, 0.5);
-    } else if (rank === "凶") {
-      tone(196, 0.05, 0.3, "sine", 0.2);
-      tone(174, 0.3, 0.45, "sine", 0.2);
-    } else {
-      tone(523, 0.05, 0.14);
-      tone(659, 0.18, 0.4);
-    }
+    tone(330, 0, 0.15, "sine", 0.14);
+    tone(262, 0.18, 0.3, "sine", 0.14);
   }
 };
 
-let bgmNode = null;
+const curveIn = new Float32Array(64);
+const curveOut = new Float32Array(64);
+for (let i = 0; i < 64; i++) {
+  const x = i / 63;
+  curveIn[i] = Math.sin(x * Math.PI / 2);
+  curveOut[i] = Math.cos(x * Math.PI / 2);
+}
+let bgmRun = null;
 
 function startBgm() {
   const b = buffers.bgm;
-  if (!b || ac.state !== "running" || bgmNode) return;
-  const src = ac.createBufferSource();
-  const g = ac.createGain();
-  src.buffer = b;
-  src.loop = true;
-  src.loopStart = Math.min(LOOP_BACK_TO, Math.max(0, b.duration - 1));
-  src.loopEnd = Math.max(src.loopStart + 1, b.duration - LOOP_CUT_END);
-  src.connect(g);
-  g.connect(master);
-  const t = ac.currentTime;
-  g.gain.setValueAtTime(0, t);
-  g.gain.linearRampToValueAtTime(BGM_VOLUME, t + FADE_IN);
-  src.start(t);
-  bgmNode = { src, g };
+  if (!b || ac.state !== "running" || bgmRun) return;
+  const loopStart = Math.min(Math.max(0, LOOP_BACK_TO), Math.max(0, b.duration - 2));
+  const loopEnd = Math.max(loopStart + 1, b.duration - Math.max(0, LOOP_CUT_END));
+  const xf = Math.min(Math.max(0.02, XFADE), Math.max(0.02, (loopEnd - loopStart - 0.5) / 2));
+  const bus = ac.createGain();
+  bus.connect(master);
+  const t0 = ac.currentTime;
+  bus.gain.setValueAtTime(0, t0);
+  bus.gain.linearRampToValueAtTime(BGM_VOLUME, t0 + FADE_IN);
+  const run = { bus, alive: true, timer: null, voices: [] };
+  bgmRun = run;
+
+  const spawn = (at, offset, first) => {
+    if (!run.alive) return;
+    const src = ac.createBufferSource();
+    const g = ac.createGain();
+    const len = loopEnd - offset;
+    src.buffer = b;
+    src.connect(g);
+    g.connect(bus);
+    if (!first) g.gain.setValueCurveAtTime(curveIn, at, xf);
+    g.gain.setValueCurveAtTime(curveOut, at + len - xf, xf);
+    src.onended = () => { run.voices = run.voices.filter((v) => v !== src); };
+    src.start(at, offset);
+    src.stop(at + len + 0.05);
+    run.voices.push(src);
+    const nextAt = at + len - xf;
+    const wait = Math.max(0, (nextAt - ac.currentTime - 1) * 1000);
+    run.timer = setTimeout(() => spawn(nextAt, loopStart, false), wait);
+  };
+  spawn(t0, 0, true);
 }
 
 function stopBgm() {
-  if (!bgmNode) return;
-  const { src, g } = bgmNode;
-  bgmNode = null;
+  if (!bgmRun) return;
+  const run = bgmRun;
+  bgmRun = null;
+  run.alive = false;
+  clearTimeout(run.timer);
   const t = ac.currentTime;
-  g.gain.cancelScheduledValues(t);
-  g.gain.setValueAtTime(g.gain.value, t);
-  g.gain.linearRampToValueAtTime(0, t + FADE_OUT);
-  src.stop(t + FADE_OUT + 0.1);
+  const p = run.bus.gain;
+  if (p.cancelAndHoldAtTime) {
+    p.cancelAndHoldAtTime(t);
+  } else {
+    p.cancelScheduledValues(t);
+    p.setValueAtTime(p.value, t);
+  }
+  p.linearRampToValueAtTime(0, t + FADE_OUT);
+  run.voices.forEach((v) => {
+    try { v.stop(t + FADE_OUT + 0.1); } catch (e) {}
+  });
+  setTimeout(() => {
+    try { run.bus.disconnect(); } catch (e) {}
+  }, (FADE_OUT + 0.4) * 1000);
 }
 
 let unlocked = false;
@@ -571,7 +498,7 @@ let timer = null;
 let countdownTimer = null;
 let popupTimer = null;
 let popupOpen = false;
-let omTimers = [];
+let laterTimers = [];
 
 function roll(el, text) {
   const old = el.querySelector(".r:not(.old)");
@@ -603,9 +530,8 @@ function startCountdown(ms) {
   countdownTimer = setInterval(tick, 200);
 }
 
-function clearOm() {
-  omTimers.forEach(clearTimeout);
-  omTimers = [];
+function later(fn, ms) {
+  laterTimers.push(setTimeout(fn, ms));
 }
 
 function stopTimeouts() {
@@ -613,7 +539,8 @@ function stopTimeouts() {
   clearInterval(countdownTimer);
   timer = null;
   countdownTimer = null;
-  clearOm();
+  laterTimers.forEach(clearTimeout);
+  laterTimers = [];
   cd.classList.remove("on", "warn");
 }
 
@@ -636,7 +563,7 @@ function hidePopup() {
 function onTimeout(s) {
   stopTimeouts();
   SFX.timeout();
-  popup("タイムアウト", "一定時間操作がなかったため、最初の画面に戻ります", () => request("idle", null, s));
+  popup("タイムアウト", "しばらく操作がなかったので、最初の画面にもどります", () => request("idle", null, s));
 }
 
 async function proceedAfterRegistered() {
@@ -649,46 +576,11 @@ async function proceedAfterRegistered() {
   }
 }
 
-function setTitle(el, text) {
-  el.textContent = text;
-  el.classList.toggle("none", !text);
+function afterEntry(d) {
+  later(() => countUp($("e-count"), Number(d.count) || 0), 1050);
+  confetti();
+  SFX.entry();
 }
-
-function later(fn, ms) {
-  omTimers.push(setTimeout(fn, ms));
-}
-
-function runOmikuji(d) {
-  const sc = scenes.omikuji;
-  const rank = d.omikuji || "吉";
-  const no = Number(d.omikujiNo) || 1;
-  const list = MSG[rank] || MSG["吉"];
-  sc.classList.remove("shake", "stick", "paper", "result");
-  $("o-sub").textContent = d.name + "さん";
-  $("o-no").textContent = "第" + no + "番";
-  $("o-num").textContent = "第" + no + "番";
-  const rk = $("o-rank");
-  rk.textContent = rank;
-  rk.dataset.rank = rank;
-  $("o-msg").textContent = list[no % list.length];
-  $("o-lucky").textContent = "今日の問題 : " + LUCKY[(no * 7) % LUCKY.length];
-  later(() => { sc.classList.add("shake"); SFX.rattle(); }, 900);
-  later(() => { sc.classList.add("stick"); SFX.stick(); }, 3000);
-  later(() => { sc.classList.add("paper"); SFX.paper(); }, 4300);
-  later(() => {
-    sc.classList.add("result");
-    SFX.stamp(rank);
-    if (GOOD.includes(rank)) confetti(["#ffd24f", "#ffb84f", "#ff9a6b", "#ffe9a8", "#4f7cff"]);
-  }, 5400);
-  later(() => request("idle", null, "omikuji"), 5400 + TIMEOUT.omikuji);
-}
-
-scenes.omikuji.addEventListener("click", () => {
-  if (state === "omikuji" && scenes.omikuji.classList.contains("result")) {
-    clearOm();
-    request("idle", null, "omikuji");
-  }
-});
 
 let busyEntry = false;
 
@@ -700,7 +592,6 @@ function show(s, d) {
 
   if (s === "confirm") {
     busyEntry = false;
-    setTitle($("c-title"), titleOf(Number(d.count) || 0));
     splitChars($("c-name"), d.name + "さん");
     btnEntry.disabled = false;
     btnCancel.disabled = false;
@@ -710,31 +601,16 @@ function show(s, d) {
     drawQr(d.url);
   }
   if (s === "entered") {
-    const count = Number(d.count) || 0;
-    const cur = titleOf(count);
-    const promoted = !!cur && cur !== titleOf(count - 1);
     const t = new Date(Number(d.at));
-    setTitle($("e-title"), cur);
-    $("e-title").classList.toggle("promo", promoted);
-    $("e-promo").classList.toggle("none", !promoted);
     splitChars($("e-name"), d.name + "さん");
     $("e-date").textContent = t.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
     $("e-time").textContent = t.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     $("e-count").textContent = "0";
-    $("e-omi").textContent = d.omikujiNew === "1"
-      ? "このあと、今日のおみくじを引きます"
-      : "今日のおみくじ　" + (d.omikuji || "");
-    later(() => countUp($("e-count"), count), 1250);
-    confetti();
-    SFX.entry();
-    if (promoted) later(() => SFX.title(), 500);
+    afterEntry(d);
   }
   if (s === "registered") {
     splitChars($("g-name"), d.name + "さん");
     SFX.registered();
-  }
-  if (s === "omikuji") {
-    runOmikuji(d);
   }
 
   scenes[s].classList.add("active");
@@ -743,11 +619,7 @@ function show(s, d) {
     startCountdown(TIMEOUT[s]);
     timer = setTimeout(() => onTimeout(s), TIMEOUT[s]);
   } else if (s === "entered") {
-    if (d.omikujiNew === "1") {
-      timer = setTimeout(() => request("omikuji", d, "entered"), TIMEOUT.enteredToOmikuji);
-    } else {
-      timer = setTimeout(() => request("idle", null, s), TIMEOUT.entered);
-    }
+    timer = setTimeout(() => request("idle", null, s), TIMEOUT.entered);
   } else if (s === "registered") {
     timer = setTimeout(proceedAfterRegistered, TIMEOUT.registered);
   }
@@ -766,17 +638,19 @@ function change(apply) {
   cover.classList.add("in");
   setTimeout(() => {
     apply();
-    cover.classList.remove("in");
-    cover.classList.add("out");
     setTimeout(() => {
-      cover.classList.remove("out");
-      busy = false;
-      if (queued) {
-        const nx = queued;
-        queued = null;
-        change(nx);
-      }
-    }, COVER_MS);
+      cover.classList.remove("in");
+      cover.classList.add("out");
+      setTimeout(() => {
+        cover.classList.remove("out");
+        busy = false;
+        if (queued) {
+          const nx = queued;
+          queued = null;
+          change(nx);
+        }
+      }, COVER_MS);
+    }, COVER_HOLD);
   }, COVER_MS);
 }
 
@@ -799,6 +673,7 @@ let lastKey = "";
 onSnapshot(ref, (snap) => {
   if (!snap.exists()) return;
   const d = snap.data();
+  lastDoc = d;
   const key = d.state + ":" + d.at;
   if (key === lastKey) return;
   lastKey = key;
@@ -819,7 +694,7 @@ async function doEntry() {
     timer = setTimeout(() => request("idle", null, "confirm"), 8000);
   } catch (e) {
     SFX.error();
-    popup("エラー", "エントリーできませんでした。最初の画面に戻ります", () => request("idle", null, "confirm"));
+    popup("Error", "エラーが発生島死多｡タイトルに戻ります", () => request("idle", null, "confirm"));
   }
 }
 
@@ -856,6 +731,20 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+if (q.has("debug")) {
+  const dbg = $("dbg");
+  dbg.classList.add("on");
+  setInterval(() => {
+    const d = lastDoc || {};
+    dbg.textContent =
+      "画面: " + state + "\n" +
+      "受信: " + (d.state || "-") + "\n" +
+      "UID: " + (d.uid || "-") + "\n" +
+      "音: " + ac.state + " / BGM " + (bgmRun ? "再生中" : "停止") + "\n" +
+      "テーマ: " + document.documentElement.dataset.theme;
+  }, 500);
+}
+
 if (q.has("test")) {
   $("testPanel").classList.add("on");
   const put = (data) => setDoc(ref, { at: Date.now(), ...data }).catch((err) => alert("書き込みに失敗: " + err.message));
@@ -864,12 +753,9 @@ if (q.has("test")) {
     SFX.click();
     fn();
   });
-  const rank = () => q.get("rank") || "大吉";
-  const no = () => Math.floor(Math.random() * 99) + 1;
   bind("t-confirm", () => put({ state: "confirm", uid: "TEST", name: "テスト", count: 9 }));
   bind("t-register", () => put({ state: "register", uid: "TEST", code: "1234", url: WORKER + "/r?code=1234" }));
-  bind("t-entered", () => put({ state: "entered", uid: "TEST", name: "テスト", count: 10, omikuji: rank(), omikujiNo: no(), omikujiNew: "1" }));
-  bind("t-entered2", () => put({ state: "entered", uid: "TEST", name: "テスト", count: 42, omikuji: rank(), omikujiNo: no(), omikujiNew: "0" }));
+  bind("t-entered", () => put({ state: "entered", uid: "TEST", name: "テスト", count: 10 }));
   bind("t-registered", () => put({ state: "registered", uid: "TEST", name: "テスト" }));
   bind("t-morning", () => { document.documentElement.dataset.theme = "morning"; });
   bind("t-night", () => { document.documentElement.dataset.theme = "night"; });

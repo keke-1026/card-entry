@@ -82,6 +82,30 @@
   .check path { stroke-dasharray: 80; stroke-dashoffset: 80; animation: draw .7s ease .2s forwards; }
   @keyframes draw { to { stroke-dashoffset: 0; } }
 
+  #today { position: fixed; right: 3.4vmin; top: 50%; width: 34vmin; transform: translateY(-50%); z-index: 10; display: none; }
+  body.is-idle #today { display: block; }
+  .td-head { display: flex; align-items: baseline; gap: 1.2vmin; padding-left: 2vmin; margin-bottom: 2vmin; font-size: 3vmin; letter-spacing: .3em; color: var(--mute); opacity: 0; animation: rise .7s cubic-bezier(.2, .8, .2, 1) forwards; animation-delay: var(--td-base, 700ms); }
+  .td-head b { font-size: 5.4vmin; letter-spacing: 0; color: var(--accent); }
+  #td-list { list-style: none; margin: 0; padding: 0; }
+  #td-list li { display: flex; align-items: baseline; gap: 1.6vmin; margin-bottom: .9vmin; padding: 1.1vmin 1vmin 1.1vmin 2vmin; border-left: .4vmin solid var(--line); font-size: 3.4vmin; opacity: 0; animation: slideIn .8s cubic-bezier(.2, .8, .2, 1) forwards; animation-delay: calc(var(--td-base, 700ms) + 200ms + var(--i) * 110ms); }
+  #td-list li.latest { border-left-color: var(--accent); color: var(--accent); }
+  #td-list li.still { opacity: 1; animation: none; }
+  #td-list li.empty, #td-list li.more { color: var(--mute); font-size: 2.8vmin; }
+  .td-time { min-width: 6.4vmin; font-size: 2.8vmin; color: var(--mute); font-variant-numeric: tabular-nums; }
+  #td-list li.latest .td-time { color: var(--accent); }
+  .td-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .td-n { font-size: 2.8vmin; color: var(--mute); }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(16vmin); } to { opacity: 1; transform: none; } }
+  @media (min-aspect-ratio: 5/4) { body.today-on #s-idle { padding-right: 40vmin; } }
+  @media (max-aspect-ratio: 5/4) {
+    #today { top: auto; bottom: 3vmin; left: 3vmin; right: 3vmin; width: auto; transform: none; }
+    .td-head { justify-content: center; padding-left: 0; margin-bottom: 1.2vmin; }
+    #td-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 1vmin 1.6vmin; }
+    #td-list li { margin: 0; border-left: 0; border-bottom: .3vmin solid var(--line); padding: .6vmin 1.4vmin; font-size: 3vmin; }
+    #td-list li.latest { border-bottom-color: var(--accent); }
+    .td-time { display: none; }
+  }
+
   #cd { position: fixed; right: 3.4vmin; top: 3vmin; z-index: 20; display: flex; align-items: baseline; gap: 1.2vmin; font-size: 3.2vmin; color: var(--mute); opacity: 0; transform: translateY(-1.5vmin); transition: opacity .4s, transform .4s, color .4s; pointer-events: none; }
   #cd.on { opacity: 1; transform: none; }
   #cd.warn { color: var(--accent); }
@@ -119,7 +143,7 @@
   #dbg.on { display: block; }
 </style>
 </head>
-<body>
+<body class="is-idle">
 <div id="bg"></div>
 
 <section class="scene active" id="s-idle">
@@ -171,6 +195,11 @@
   <div class="note rise" style="--d:1200ms">続けてエントリーします</div>
 </section>
 
+<div id="today">
+  <div class="td-head"><span>エントリー</span><b id="td-count">0</b><span>人</span></div>
+  <ul id="td-list"></ul>
+</div>
+
 <div id="cd"><span>のこり</span><span id="cd-num"></span><span>秒</span></div>
 <div id="popup"><div class="pop-card"><div class="pop-title" id="pop-title"></div><div class="pop-body" id="pop-body"></div></div></div>
 <div id="confetti"></div>
@@ -189,7 +218,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, setDoc, collection, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const q = new URLSearchParams(location.search);
 const num = (k, d) => {
@@ -199,13 +228,14 @@ const num = (k, d) => {
 
 const CONFIG = {
   worker: "https://entry.keikeiy1026-e69.workers.dev",
-  files: { bgm: "bgm.wav", entry: "entry.wav", timeout: "", click: "click.mp3" },
+  files: { entry: "entry.wav", timeout: "", click: "click.mp3" },
+  bgmFiles: ["bgm.wav", "bgm2.wav", "bgm3.wav"],
   bgmVolume: 0.6,
   fadeIn: 1.2,
   fadeOut: 1.6,
   loopStart: 0,
   loopCut: 0,
-  xfade: 0.15,
+  xfade: 1.5,
   morningFrom: 6,
   nightFrom: 18,
   timeoutConfirm: 30,
@@ -216,12 +246,15 @@ const CONFIG = {
   coverStripes: 8,
   coverDur: 520,
   coverStep: 60,
-  coverHold: 150
+  coverHold: 150,
+  todayShow: true,
+  todayMax: 8
 };
 const cfg = (k) => (q.has(k) ? num(k, CONFIG[k]) : CONFIG[k]);
 
 const WORKER = CONFIG.worker;
 const FILES = CONFIG.files;
+const BGM_LIST = CONFIG.bgmFiles.map((x) => (typeof x === "string" ? { file: x } : x));
 const BGM_VOLUME = cfg("bgmVolume");
 const FADE_IN = cfg("fadeIn");
 const FADE_OUT = cfg("fadeOut");
@@ -244,6 +277,10 @@ const COVER_HOLD = cfg("coverHold");
 const COVER_MS = COVER_DUR + (STRIPES - 1) * COVER_STEP + 40;
 document.documentElement.style.setProperty("--dur", COVER_DUR + "ms");
 document.documentElement.style.setProperty("--step", COVER_STEP + "ms");
+const TODAY_MAX = Math.max(1, Math.round(cfg("todayMax")));
+const TODAY_ON = q.has("today") ? num("today", 1) !== 0 : CONFIG.todayShow;
+document.documentElement.style.setProperty("--td-base", Math.round(COVER_HOLD + COVER_DUR * 0.9) + "ms");
+if (TODAY_ON) document.body.classList.add("today-on");
 
 const app = initializeApp({
   apiKey: "AIzaSyBjQWOa8y2UWgL81HvmEv_yiTCtTbk4cxU",
@@ -305,6 +342,22 @@ Object.entries(FILES).forEach(async ([k, u]) => {
   buffers[k] = await loadBuffer(u);
 });
 
+const bgmTracks = [];
+BGM_LIST.forEach(async (t) => {
+  const buf = await loadBuffer(t.file);
+  if (buf) bgmTracks.push({ ...t, buf });
+});
+let lastBgmFile = "";
+let currentBgm = "";
+
+function pickBgm() {
+  if (!bgmTracks.length) return null;
+  const pool = bgmTracks.length > 1 ? bgmTracks.filter((t) => t.file !== lastBgmFile) : bgmTracks;
+  const t = pool[Math.floor(Math.random() * pool.length)];
+  lastBgmFile = t.file;
+  return t;
+}
+
 function tone(freq, start, dur, type = "sine", vol = 0.18) {
   const t = ac.currentTime + start;
   const o = ac.createOscillator();
@@ -365,16 +418,23 @@ for (let i = 0; i < 64; i++) {
 let bgmRun = null;
 
 function startBgm() {
-  const b = buffers.bgm;
-  if (!b || ac.state !== "running" || bgmRun) return;
-  const loopStart = Math.min(Math.max(0, LOOP_BACK_TO), Math.max(0, b.duration - 2));
-  const loopEnd = Math.max(loopStart + 1, b.duration - Math.max(0, LOOP_CUT_END));
-  const xf = Math.min(Math.max(0.02, XFADE), Math.max(0.02, (loopEnd - loopStart - 0.5) / 2));
+  if (ac.state !== "running" || bgmRun) return;
+  const track = pickBgm();
+  if (!track) return;
+  const b = track.buf;
+  const loopBack = track.loopStart ?? LOOP_BACK_TO;
+  const loopCut = track.loopCut ?? LOOP_CUT_END;
+  const xfade = track.xfade ?? XFADE;
+  const volume = track.volume ?? BGM_VOLUME;
+  currentBgm = track.file;
+  const loopStart = Math.min(Math.max(0, loopBack), Math.max(0, b.duration - 2));
+  const loopEnd = Math.max(loopStart + 1, b.duration - Math.max(0, loopCut));
+  const xf = Math.min(Math.max(0.02, xfade), Math.max(0.02, (loopEnd - loopStart - 0.5) / 2));
   const bus = ac.createGain();
   bus.connect(master);
   const t0 = ac.currentTime;
   bus.gain.setValueAtTime(0, t0);
-  bus.gain.linearRampToValueAtTime(BGM_VOLUME, t0 + FADE_IN);
+  bus.gain.linearRampToValueAtTime(volume, t0 + FADE_IN);
   const run = { bus, alive: true, timer: null, voices: [] };
   bgmRun = run;
 
@@ -563,7 +623,7 @@ function hidePopup() {
 function onTimeout(s) {
   stopTimeouts();
   SFX.timeout();
-  popup("タイムアウト", "しばらく操作がなかったので、最初の画面にもどります", () => request("idle", null, s));
+  popup("あれれ、時間切れです", "しばらく操作がなかったので、最初の画面にもどりますね", () => request("idle", null, s));
 }
 
 async function proceedAfterRegistered() {
@@ -582,6 +642,130 @@ function afterEntry(d) {
   SFX.entry();
 }
 
+let today = [];
+let todayError = "";
+let todaySig = "";
+let shownKeys = new Set();
+let unsubToday = null;
+let todayDay = "";
+const FAKE_NAMES = ["たろう", "はなこ", "けけ", "ゆうき", "みお", "そら", "りん", "あおい", "ひなた", "れん"];
+
+function dayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+
+function todayRow(cls, text, idx, still) {
+  const li = document.createElement("li");
+  li.className = cls + (still ? " still" : "");
+  li.style.setProperty("--i", idx);
+  li.textContent = text;
+  return li;
+}
+
+function renderToday(replay) {
+  if (!TODAY_ON) return;
+  const list = $("td-list");
+  const still = !replay;
+  if (replay) shownKeys = new Set();
+  list.textContent = "";
+  $("td-count").textContent = String(today.length);
+  if (todayError) {
+    list.appendChild(todayRow("empty", "一覧を読み込めません", 0, still));
+    return;
+  }
+  if (!today.length) {
+    list.appendChild(todayRow("empty", "まだ誰もいません", 0, still));
+    return;
+  }
+  const shown = today.slice(0, TODAY_MAX);
+  let order = 0;
+  shown.forEach((p, i) => {
+    const key = p.uid + ":" + p.last;
+    const seen = shownKeys.has(key);
+    const li = document.createElement("li");
+    const t = document.createElement("span");
+    const n = document.createElement("span");
+    shownKeys.add(key);
+    li.style.setProperty("--i", replay ? i : order);
+    if (!replay && seen) li.classList.add("still");
+    if (!replay && !seen) order += 1;
+    if (i === 0) li.classList.add("latest");
+    t.className = "td-time";
+    t.textContent = new Date(p.last).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
+    n.className = "td-name";
+    n.textContent = p.name;
+    li.append(t, n);
+    if (p.n > 1) {
+      const c = document.createElement("span");
+      c.className = "td-n";
+      c.textContent = "×" + p.n;
+      li.appendChild(c);
+    }
+    list.appendChild(li);
+  });
+  if (today.length > shown.length) {
+    list.appendChild(todayRow("more", "ほか " + (today.length - shown.length) + "人", shown.length, still));
+  }
+}
+
+function applyToday(next) {
+  const sig = JSON.stringify(next.map((p) => [p.uid, p.last, p.n, p.name])) + "|" + todayError;
+  today = next;
+  if (sig === todaySig) return;
+  todaySig = sig;
+  if (state === "idle") renderToday(false);
+}
+
+function subscribeToday() {
+  if (!TODAY_ON) return;
+  if (unsubToday) {
+    unsubToday();
+    unsubToday = null;
+  }
+  todayDay = dayKey();
+  todayError = "";
+  if (q.has("fake")) {
+    const cnt = Math.min(Math.max(0, Math.round(num("fake", 5))), FAKE_NAMES.length);
+    const now = Date.now();
+    applyToday(FAKE_NAMES.slice(0, cnt).map((name, i) => {
+      const at = now - (i + 1) * 900000;
+      return { uid: "fake" + i, name, first: at, last: at, n: i === 1 ? 2 : 1 };
+    }));
+    return;
+  }
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const qy = query(collection(db, "checkin-log"), where("at", ">=", start.getTime()), orderBy("at", "asc"));
+  unsubToday = onSnapshot(qy, (snap) => {
+    if (snap.metadata.fromCache && snap.empty) return;
+    todayError = "";
+    const map = new Map();
+    snap.forEach((docSnap) => {
+      const x = docSnap.data();
+      const key = x.uid || docSnap.id;
+      const at = Number(x.at);
+      const cur = map.get(key);
+      if (!cur) {
+        map.set(key, { uid: key, name: x.name, first: at, last: at, n: 1 });
+      } else {
+        cur.last = at;
+        cur.n += 1;
+        cur.name = x.name;
+      }
+    });
+    applyToday([...map.values()].sort((a, b) => b.last - a.last));
+  }, (err) => {
+    todayError = err && err.code ? err.code : "error";
+    console.error(err);
+    applyToday([]);
+  });
+}
+subscribeToday();
+setInterval(() => {
+  if (dayKey() !== todayDay) subscribeToday();
+}, 30000);
+
 let busyEntry = false;
 
 function show(s, d) {
@@ -589,6 +773,8 @@ function show(s, d) {
   hidePopup();
   Object.values(scenes).forEach((el) => el.classList.remove("active"));
   void document.body.offsetWidth;
+  document.body.classList.toggle("is-idle", s === "idle");
+  if (s === "idle") renderToday(true);
 
   if (s === "confirm") {
     busyEntry = false;
@@ -694,7 +880,7 @@ async function doEntry() {
     timer = setTimeout(() => request("idle", null, "confirm"), 8000);
   } catch (e) {
     SFX.error();
-    popup("Error", "エラーが発生島死多｡タイトルに戻ります", () => request("idle", null, "confirm"));
+    popup("ごめんなさい", "うまくいきませんでした。最初の画面にもどりますね", () => request("idle", null, "confirm"));
   }
 }
 
@@ -740,7 +926,8 @@ if (q.has("debug")) {
       "画面: " + state + "\n" +
       "受信: " + (d.state || "-") + "\n" +
       "UID: " + (d.uid || "-") + "\n" +
-      "音: " + ac.state + " / BGM " + (bgmRun ? "再生中" : "停止") + "\n" +
+      "音: " + ac.state + " / BGM " + (bgmRun ? "再生中 " + currentBgm : "停止") + "\n" +
+      "一覧: " + today.length + "人" + (todayError ? " / エラー " + todayError : "") + "\n" +
       "テーマ: " + document.documentElement.dataset.theme;
   }, 500);
 }
